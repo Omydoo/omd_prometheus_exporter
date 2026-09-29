@@ -45,7 +45,7 @@ class TestMetrics(HttpCase):
             self.assertIn(f"# TYPE {famille} gauge", reponse.text)
         self.assertIn('odoo_cron_total{state="inactive"}', reponse.text)
         self.assertIn('omd_exporter_collector_failed{collector="collect_sessions"} 0', reponse.text)
-        if "mail.presence" in self.env:
+        if "mail.presence" in self.env or "bus.presence" in self.env:
             for famille in ("odoo_users_connected", "odoo_users_idle", "odoo_users_seen_24h"):
                 self.assertIn(f"# TYPE {famille} gauge", reponse.text)
         else:

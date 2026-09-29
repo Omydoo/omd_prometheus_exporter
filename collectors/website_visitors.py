@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from odoo import fields
 
-from .base import Metric, register
+from .base import Metric, lire_entier, register
 
 
 @register
@@ -10,9 +10,7 @@ def collect_website_visitors(env):
     """Compter les visiteurs récents du site public, s'il est installé."""
     if "website.visitor" not in env:
         return []
-    fenetre = int(
-        env["ir.config_parameter"].sudo().get_param("omd_prometheus_exporter.website_visitor_window_seconds", "300")
-    )
+    fenetre = lire_entier(env, "omd_prometheus_exporter.website_visitor_window_seconds", 300)
     depuis = fields.Datetime.now() - timedelta(seconds=fenetre)
     visiteurs = env["website.visitor"].sudo()
 

@@ -48,6 +48,15 @@ def _formater(valeur):
     return f"{valeur:.6f}".rstrip("0").rstrip(".")
 
 
+def lire_entier(env, cle, defaut):
+    """Lire un réglage entier de `ir.config_parameter`, quelle que soit la série d'Odoo."""
+    parametres = env["ir.config_parameter"].sudo()
+    # Odoo 20 a remplacé `get_param` par des lecteurs typés.
+    if hasattr(parametres, "get_int"):
+        return parametres.get_int(cle, defaut)
+    return int(parametres.get_param(cle, str(defaut)))
+
+
 def register(fn):
     """Enregistrer une fonction de collecte `fn(env) -> list[Metric]`."""
     _REGISTRE.append(fn)

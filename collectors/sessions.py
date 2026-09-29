@@ -2,18 +2,16 @@ from datetime import timedelta
 
 from odoo import fields
 
-from .base import Metric, register
+from .base import Metric, lire_entier, register
 
-# `bus.presence` est devenu `mail.presence` en Odoo 18.
+# `bus.presence` (jusqu'en Odoo 17) est devenu `mail.presence` en Odoo 18.
 _MODELES_PRESENCE = ("mail.presence", "bus.presence")
 
 
 @register
 def collect_sessions(env):
     """Compter les utilisateurs connectés, inactifs et vus dans les dernières 24 h."""
-    seuil_inactivite = int(
-        env["ir.config_parameter"].sudo().get_param("omd_prometheus_exporter.idle_threshold_seconds", "900")
-    )
+    seuil_inactivite = lire_entier(env, "omd_prometheus_exporter.idle_threshold_seconds", 900)
     presence = next((env[nom].sudo() for nom in _MODELES_PRESENCE if nom in env), None)
     if presence is None:
         return []

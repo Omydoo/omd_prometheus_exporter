@@ -40,8 +40,7 @@ class ExporteurPrometheus(http.Controller):
         if _CACHE["corps"] is not None and _CACHE["expire_le"] > maintenant:
             return Response(_CACHE["corps"], status=200, content_type=TYPE_CONTENU)
 
-        parametres = request.env["ir.config_parameter"].sudo()
-        ttl = int(parametres.get_param("omd_prometheus_exporter.cache_ttl_seconds", "30"))
+        ttl = collecteurs.lire_entier(request.env, "omd_prometheus_exporter.cache_ttl_seconds", 30)
         corps = collecteurs.render_all(collecteurs.collect_all(request.env))
         _CACHE["corps"] = corps
         _CACHE["expire_le"] = maintenant + max(ttl, 1)
@@ -51,8 +50,9 @@ class ExporteurPrometheus(http.Controller):
 def _jeton_fourni(entetes):
     """Rendre le jeton présenté (`Authorization: Bearer` ou `X-Prometheus-Token`), ou une chaîne vide."""
     autorisation = entetes.get("Authorization", "")
+    # Pas de `str.removeprefix` : l'image Odoo 14 tourne sous Python 3.7.
     if autorisation.startswith("Bearer "):
-        return autorisation.removeprefix("Bearer ").strip()
+        return autorisation[len("Bearer ") :].strip()
     return entetes.get("X-Prometheus-Token", "")
 
 

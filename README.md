@@ -29,10 +29,12 @@ Réglages (`ir.config_parameter`) : `omd_prometheus_exporter.cache_ttl_seconds` 
 
 ## Branches et tests
 
-Une branche par série Odoo (`19.0` pour commencer). La plateforme attache le module aux instances
-d'une série seulement si la branche existe.
+Une branche par série Odoo, de `14.0` à `20.0`, au même code ; seule la version du manifest
+change. La plateforme attache le module aux instances d'une série seulement si la branche existe.
+Le code reste compatible avec Python 3.7 (image Odoo 14) et lit ses réglages par `get_int`
+quand `get_param` n'existe plus (Odoo 20).
 
 ```bash
-./tester_image.sh 19.0                           # base seule
+./tester_image.sh 19.0                           # base seule ; toute série de 14.0 à 20.0
 MODULES_EN_PLUS=mail,website ./tester_image.sh 19.0
 ```
